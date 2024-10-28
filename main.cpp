@@ -6,8 +6,8 @@ std::map<char,int>map;
 void encode(){
     std::string passage;
     WordList wordlist;
-    freopen("1.MIT-license.txt","rb",stdin);
-    freopen("1.MIT-license.txt.huff","wb",stdout);
+    freopen("4.USTC-logo.png","rb",stdin);
+    freopen("4.USTC-logo.png.huff","wb",stdout);
     char c;
     while(scanf("%c",&c)!=EOF){
         passage+=c;
@@ -23,54 +23,71 @@ void encode(){
     }
     HuffmanTree tree(wordlist);
     tree.buildList(tree.root,"");
+    std::string compressionFile;
     std::bitset<8>sizeToBin(tree.list.size()-1);//0到255
-    std::cout<<sizeToBin.to_string();
+    compressionFile+=sizeToBin.to_string();
     for(int i=0;i<tree.list.size();i++){
         std::bitset<8>firstToBin(tree.list[i].first[0]);
-        std::cout<<firstToBin.to_string();
+        compressionFile+=firstToBin.to_string();
         std::bitset<5>lengthToBin(tree.list[i].second.length());
-        std::cout<<lengthToBin.to_string();
-        std::cout<<tree.list[i].second;
+        compressionFile+=lengthToBin.to_string();
+        compressionFile+=tree.list[i].second;
     }
     int length=passage.length();
     for(int i=0;i<length;i++){
         std::string s;
         s+=passage[i];
-        std::cout<<tree.map[s];
+        compressionFile+=tree.map[s];
+    }
+    for(int i=0;i<compressionFile.length();i+=8){
+        char code=0;
+        for(int j=0;j<8;j++){
+            if(i+j>=compressionFile.length())
+                code=code*2+1;
+            else
+                code=code*2+compressionFile[i+j]-'0';
+        }
+        std::cout<<code;
     }
     fclose(stdin);
     fclose(stdout);
 }
 void decode(){
-    freopen("1.MIT-license.txt.huff","rb",stdin);
-    freopen("1.MIT-license.txt.decode","wb",stdout);
+    freopen("4.USTC-logo.png.huff","rb",stdin);
+    freopen("4.USTC-logo.png.decode","wb",stdout);
     std::map<std::string,std::string>map;
     int listLength=0;
+    std::string compressionFile;
+    char c;
+    while(scanf("%c",&c)!=EOF){
+        std::bitset<8>charToBin(c);
+        compressionFile+=charToBin.to_string();
+    }
+    int cnt=0;
     for(int i=1;i<=8;i++){
-        listLength=listLength*2+getchar()-'0';
+        listLength=listLength*2+compressionFile[cnt++]-'0';
     }
     listLength++;
     for(int i=1;i<=listLength;i++){
         char c=0;
         for(int j=1;j<=8;j++){
-            c=c*2+getchar()-'0';
+            c=c*2+compressionFile[cnt++]-'0';
         }
         std::string text;
         text+=c;
         int codeLength=0;
         for(int j=1;j<=5;j++){
-            codeLength=codeLength*2+getchar()-'0';
+            codeLength=codeLength*2+compressionFile[cnt++]-'0';
         }
         std::string code;
         for(int j=1;j<=codeLength;j++){
-            code+=getchar();
+            code+=compressionFile[cnt++];
         }
         map[code]=text;
     }
     std::string codeNow;
-    char c;
-    while(scanf("%c",&c)!=EOF){
-        codeNow+=c;
+    while(cnt<compressionFile.length()){
+        codeNow+=compressionFile[cnt++];
         if(map[codeNow]!=""){
             std::cout<<map[codeNow];
             codeNow="";
