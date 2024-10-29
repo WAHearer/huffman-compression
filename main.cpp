@@ -1,7 +1,4 @@
-#include<iostream>
-#include<map>
 #include<bitset>
-#include<algorithm>
 #include"HuffmanTree.h"
 void encode(std::string filename){
     std::string passage;
