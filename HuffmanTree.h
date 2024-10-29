@@ -1,7 +1,9 @@
 #include<vector>
 #include<string>
-#include<iostream>
 #include<map>
+#include<queue>
+#include<algorithm>
+#include<iostream>
 #ifndef HUFFMAN_COMPRESSION_HUFFMANTREE_H
 #define HUFFMAN_COMPRESSION_HUFFMANTREE_H
 class Word{
@@ -10,7 +12,6 @@ public:
     int val;
 };
 class WordList{
-    friend class HuffmanTree;
 public:
     std::vector<Word>list;
 };
@@ -29,7 +30,7 @@ public:
     TreeNode *root;
     std::vector<std::pair<std::string,std::string>>list;
     std::map<std::string,std::string>map;
-    HuffmanTree(WordList wordlist);
+    explicit HuffmanTree(WordList wordlist);
     void buildList(TreeNode *node,std::string s);
     void print();
 };
