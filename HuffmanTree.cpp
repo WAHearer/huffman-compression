@@ -65,3 +65,18 @@ HuffmanTree::HuffmanTree(WordList wordlist){
     }
     root=nodelist[0];
 }
+void HuffmanTree::buildList(TreeNode *node,std::string s){
+    if(node->s!=""){
+        list.push_back({node->s,s});
+        map[node->s]=s;
+    }
+    if(node->left)
+        buildList(node->left,s+"0");
+    if(node->right)
+        buildList(node->right,s+"1");
+}
+void HuffmanTree::print(){
+    for(int i=0;i<list.size();i++){
+        std::cout<<list[i].first<<" "<<list[i].second<<std::endl;
+    }
+}
