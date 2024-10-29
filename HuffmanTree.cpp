@@ -1,6 +1,4 @@
 #include"HuffmanTree.h"
-#include<queue>
-#include<algorithm>
 TreeNode::TreeNode(int val):val(val),father(nullptr),left(nullptr),right(nullptr){}
 TreeNode::TreeNode(std::string &s,int val):s(s),val(val),father(nullptr),left(nullptr),right(nullptr){}
 HuffmanTree::HuffmanTree(WordList wordlist){
