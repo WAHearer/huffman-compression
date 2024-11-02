@@ -31,7 +31,7 @@ public:
     std::vector<std::pair<std::string,std::string>>list;
     std::map<std::string,std::string>map;
     explicit HuffmanTree(WordList wordlist);
-    void buildList(TreeNode *node,std::string s);
+    void buildList(TreeNode *node,const std::string &s);
     void print();
 };
 #endif
