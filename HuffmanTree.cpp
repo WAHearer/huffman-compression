@@ -3,8 +3,8 @@ TreeNode::TreeNode(int val):val(val),father(nullptr),left(nullptr),right(nullptr
 TreeNode::TreeNode(std::string &s,int val):s(s),val(val),father(nullptr),left(nullptr),right(nullptr){}
 HuffmanTree::HuffmanTree(WordList wordlist){
     std::vector<TreeNode*>nodelist;
-    for(int i=0;i<wordlist.list.size();i++){
-        TreeNode *node=new TreeNode(wordlist.list[i].s,wordlist.list[i].val);
+    for(auto &i:wordlist.list){
+        TreeNode *node=new TreeNode(i.s,i.val);
         nodelist.push_back(node);
     }
     std::deque<int>q;
@@ -46,10 +46,10 @@ HuffmanTree::HuffmanTree(WordList wordlist){
             }
         }
         int pos1=q.front(),pos2,minn=0x7fffffff;
-        for(int i=0;i<defeat[pos1].size();i++){
-            if(nodelist[defeat[pos1][i]]->val<minn){
-                pos2=defeat[pos1][i];
-                minn=nodelist[defeat[pos1][i]]->val;
+        for(int &i:defeat[pos1]){
+            if(nodelist[i]->val<minn){
+                pos2=i;
+                minn=nodelist[i]->val;
             }
         }
         TreeNode *node=new TreeNode(nodelist[pos1]->val+nodelist[pos2]->val);
@@ -63,9 +63,9 @@ HuffmanTree::HuffmanTree(WordList wordlist){
     }
     root=nodelist[0];
 }
-void HuffmanTree::buildList(TreeNode *node,std::string s){
-    if(node->s!=""){
-        list.push_back({node->s,s});
+void HuffmanTree::buildList(TreeNode *node,const std::string &s){
+    if(!node->s.empty()){
+        list.emplace_back(node->s,s);
         map[node->s]=s;
     }
     if(node->left)
@@ -74,7 +74,7 @@ void HuffmanTree::buildList(TreeNode *node,std::string s){
         buildList(node->right,s+"1");
 }
 void HuffmanTree::print(){
-    for(int i=0;i<list.size();i++){
-        std::cout<<list[i].first<<" "<<list[i].second<<std::endl;
+    for(auto &i:list){
+        std::cout<<i.first<<" "<<i.second<<std::endl;
     }
 }
