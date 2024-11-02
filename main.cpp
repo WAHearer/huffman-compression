@@ -24,12 +24,12 @@ void encode(std::string filename){
     std::string compressionFile;
     std::bitset<8>sizeToBin(tree.list.size()-1);//0到255
     compressionFile+=sizeToBin.to_string();
-    for(int i=0;i<tree.list.size();i++){
-        std::bitset<8>firstToBin(tree.list[i].first[0]);
+    for(auto &i:tree.list){
+        std::bitset<8>firstToBin(i.first[0]);
         compressionFile+=firstToBin.to_string();
-        std::bitset<5>lengthToBin(tree.list[i].second.length());
+        std::bitset<5>lengthToBin(i.second.length());
         compressionFile+=lengthToBin.to_string();
-        compressionFile+=tree.list[i].second;
+        compressionFile+=i.second;
     }
     int length=passage.length();
     for(int i=0;i<length;i++){
@@ -50,9 +50,9 @@ void encode(std::string filename){
     fclose(stdin);
     fclose(stdout);
 }
-void decode(std::string filename){
+void decode(const std::string &filename){
     freopen((filename+".huff").data(),"rb",stdin);
-    freopen((filename+".decode").data(),"wb",stdout);
+    freopen(("decoded-"+filename).data(),"wb",stdout);
     std::map<std::string,std::string>map;
     int listLength=0;
     std::string compressionFile;
@@ -67,7 +67,7 @@ void decode(std::string filename){
     }
     listLength++;
     for(int i=1;i<=listLength;i++){
-        char c=0;
+        c=0;
         for(int j=1;j<=8;j++){
             c=c*2+compressionFile[cnt++]-'0';
         }
@@ -86,7 +86,7 @@ void decode(std::string filename){
     std::string codeNow;
     while(cnt<compressionFile.length()){
         codeNow+=compressionFile[cnt++];
-        if(map[codeNow]!=""){
+        if(!map[codeNow].empty()){
             std::cout<<map[codeNow];
             codeNow="";
         }
@@ -102,7 +102,6 @@ void encodeWithWord(std::string filename){
     std::map<char,int>pos;
     std::map<std::string,int>wordCnt;
     std::vector<std::string>wordToHuffman;
-    int cnt=0;
     while(scanf("%c",&c)!=EOF){
         passage+=c;
         if((c>='A'&&c<='Z')||(c>='a'&&c<='z'))
@@ -123,37 +122,36 @@ void encodeWithWord(std::string filename){
             wordlist.list.push_back(Word(s,1));
         }
     }
-    for(int i=0;i<wordToHuffman.size();i++){
-        std::string word=wordToHuffman[i];
-        wordlist.list.push_back(Word(word,wordCnt[word]));
+    for(auto &wordInList:wordToHuffman){
+        wordlist.list.push_back(Word(wordInList,wordCnt[wordInList]));
     }
     HuffmanTree tree(wordlist);
     tree.buildList(tree.root,"");
     std::string compressionFile;
     std::bitset<8>sizeToBin(tree.list.size()-1);//0到255
     compressionFile+=sizeToBin.to_string();
-    for(int i=0;i<tree.list.size();i++){
-        std::bitset<4>lengthOfWordToBin(tree.list[i].first.length());
+    for(auto &i:tree.list){
+        std::bitset<4>lengthOfWordToBin(i.first.length());
         compressionFile+=lengthOfWordToBin.to_string();
-        for(int j=0;j<tree.list[i].first.length();j++){
-            std::bitset<8>firstToBin(tree.list[i].first[j]);
+        for(int j=0;j<i.first.length();j++){
+            std::bitset<8>firstToBin(i.first[j]);
             compressionFile+=firstToBin.to_string();
         }
-        std::bitset<5>lengthToBin(tree.list[i].second.length());
+        std::bitset<5>lengthToBin(i.second.length());
         compressionFile+=lengthToBin.to_string();
-        compressionFile+=tree.list[i].second;
+        compressionFile+=i.second;
     }
     int length=passage.length();
     for(int i=0;i<length;i++){
         std::string s;
-        char c=passage[i];
-        std::string word;
+        c=passage[i];
+        word="";
         int j=i;
         while((c>='A'&&c<='Z')||(c>='a'&&c<='z')){
             word+=c;
             c=passage[++j];
         }
-        if(tree.map[word]!=""){
+        if(!tree.map[word].empty()){
             s=word;
             i=j-1;
         }
@@ -174,9 +172,9 @@ void encodeWithWord(std::string filename){
     fclose(stdin);
     fclose(stdout);
 }
-void decodeWithWord(std::string filename){
+void decodeWithWord(const std::string &filename){
     freopen((filename+".huffWithWord").data(),"rb",stdin);
-    freopen((filename+".decodeWithWord").data(),"wb",stdout);
+    freopen(("decodedWithWord-"+filename).data(),"wb",stdout);
     std::map<std::string,std::string>map;
     int listLength=0;
     std::string compressionFile;
@@ -197,7 +195,7 @@ void decodeWithWord(std::string filename){
         }
         std::string text;
         for(int pos=1;pos<=wordLength;pos++){
-            char c=0;
+            c=0;
             for(int j=1;j<=8;j++){
                 c=c*2+compressionFile[cnt++]-'0';
             }
@@ -216,14 +214,24 @@ void decodeWithWord(std::string filename){
     std::string codeNow;
     while(cnt<compressionFile.length()){
         codeNow+=compressionFile[cnt++];
-        if(map[codeNow]!=""){
+        if(!map[codeNow].empty()){
             std::cout<<map[codeNow];
             codeNow="";
         }
     }
 }
 int main(){
+    encode("1.MIT-license.txt");
+    encode("2.hamlet.txt");
+    encode("3.USTC-logo.bmp");
+    encode("4.USTC-logo.png");
+    encode("5.data-structure.pdf");
     encode("6.MV.mp4");
+    decode("1.MIT-license.txt");
+    decode("2.hamlet.txt");
+    decode("3.USTC-logo.bmp");
+    decode("4.USTC-logo.png");
+    decode("5.data-structure.pdf");
     decode("6.MV.mp4");
     encodeWithWord("2.hamlet.txt");
     decodeWithWord("2.hamlet.txt");
